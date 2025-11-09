@@ -1,13 +1,13 @@
-package artim.nemuos.serviceName;
+package artim.nemuos.karm;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ServiceNameApplication {
+public class KarmApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServiceNameApplication.class, args);
+		SpringApplication.run(KarmApp.class, args);
 	}
 
 }

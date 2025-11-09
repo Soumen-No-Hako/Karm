@@ -1,10 +1,10 @@
-package artim.nemuos.serviceName;
+package artim.nemuos.karm;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ServiceNameApplicationTests {
+class KarmAppTests {
 
 	@Test
 	void contextLoads() {
