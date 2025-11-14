@@ -31,37 +31,43 @@ public class KarmController {
         // Write jsonString to projectFile
     }
     @PostMapping("/createProject")
-    public void createProject(String projectId, String projectName, String projectDescription) {
-
+    public String createProject(String projectId, String projectName, String projectDescription, Model model) {
+        return "redirect:/index";
     }
     @GetMapping("/home")
     public String homepage(Model model) {
         model.addAttribute("projects", projects);
-        return "index";
+        return "redirect:/index";
     }
     public void crtProject(String projectId, String projectName, String projectDescription){
+        Project p = new Project(projectId, projectName, projectDescription);
 
     }
     public void updProject(String projectId, String projectName, String projectDescription){
 
     }
-    public void showProject(String projectId, String projectName, String projectDescription){
+    public String showProject(String projectId, Model model){
         // Show the desired project based on projectId and redirect to project page
+        model.addAttribute("project", projects.stream().filter(p->p.getProjectId().equals(projectId)).findFirst().get());
+        return "projectView";
     }
     public void dltProject(String projectId, String projectName, String projectDescription){
         //dlt the project based on projectid
     }
-    public void crtWorkitem(String projectId, String workItemName, String workItemDesc, Model model){
+    public String crtWorkitem(String projectId, String workItemName, String workItemDesc, Model model){
         int projectIndex = IntStream.range(0, projects.size()).filter((i-> projects.get(i).getProjectId().equals(projectId))).findFirst().getAsInt();
         WorkItem w = new WorkItem(projectId+"-"+projects.get(projectIndex).getWorkItemCount(), workItemName, workItemDesc);
         projects.get(projectIndex).setWorkItemCount(projects.get(projectIndex).getWorkItemCount()+1);
         projects.get(projectIndex).getWorkItems().add(w);
+        projects.get(projectIndex).setLastModifiedOn(java.time.Instant.now().toString());
         model.addAttribute("projects", projects);
+        return "index";
     }
     public void updWorkitem(String workItemId, String projectName, String projectDescription){
 
     }
     public void showWorkitem(String workItemId){
+
 
     }
     public void dltWorkitem(String workItemId){
