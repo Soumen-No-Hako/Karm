@@ -1,47 +1,78 @@
 package artim.nemuos.karm.controller;
 
+import artim.nemuos.karm.KarmApp;
 import artim.nemuos.karm.model.Project;
 import artim.nemuos.karm.model.WorkItem;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Controller
 public class KarmController {
 
-    List<Project> projects;
+    static ArrayList<Project> projects;
 
-    public void loadProjects() throws FileNotFoundException {
+    public static void loadProjects() throws IOException {
         Gson objectMapper = new Gson();
-        FileInputStream projectFile = new FileInputStream("projects.json");
-        projects = List.of( objectMapper.fromJson(  projectFile.toString(), Project[].class) );
+        if(!new File("projects.json").exists()){
+            new File("projects.json").createNewFile();
+        }
+        String json = Files.readString(Path.of("projects.json"));
+        System.out.println("Loaded JSON: " + json.length());
+        if(json.length()!=0) projects = objectMapper.fromJson(json, new TypeToken<ArrayList<Project>>() {}.getType());
     }
-    public void saveProjects() {
+
+    public void saveProjects() throws IOException {
         Gson objectMapper = new Gson();
         File projectFile = new File("projects.json");
         String jsonString = objectMapper.toJson(projects);
         // Write jsonString to projectFile
+        Files.writeString(Path.of("projects.json"), jsonString);
     }
-    @PostMapping("/createProject")
-    public String createProject(String projectId, String projectName, String projectDescription, Model model) {
-        return "redirect:/index";
-    }
-    @GetMapping("/home")
-    public String homepage(Model model) {
+    @GetMapping("/")
+    public String homepage(Model model) throws IOException {
+        loadProjects();
         model.addAttribute("projects", projects);
-        return "redirect:/index";
+        boolean EmptyProject = false;
+        if(projects == null){
+            EmptyProject = true;
+        }
+        model.addAttribute("EmptyProject", EmptyProject);
+        return "index";
     }
-    public void crtProject(String projectId, String projectName, String projectDescription){
-        Project p = new Project(projectId, projectName, projectDescription);
 
+    @GetMapping("/project/new")
+    public String crtProjectPage(@ModelAttribute Project project, Model model){
+        model.addAttribute("project", project);
+        return "newProject";
+    }
+    @PostMapping("/project/new")
+    public RedirectView crtProject(@ModelAttribute Project project, Model model) throws IOException {
+        System.out.println("Creating project: " + project.getProjectName()+", "+project.getProjectDescription()+" ID: "+project.getProjectId());
+        Project p = new Project(project.getProjectId(), project.getProjectName(), project.getProjectDescription());
+        System.out.println(p.toString());
+        if(projects==null) {
+            projects = new ArrayList<>();
+        }
+        projects.add(p);
+        saveProjects();
+        model.addAttribute("projects", projects);
+        return new RedirectView("/");
     }
     public void updProject(String projectId, String projectName, String projectDescription){
 
@@ -55,7 +86,11 @@ public class KarmController {
         //dlt the project based on projectid
     }
     public String crtWorkitem(String projectId, String workItemName, String workItemDesc, Model model){
+
+        // intStream to simply process int values other was another logic would have been needed to convert object index to int
         int projectIndex = IntStream.range(0, projects.size()).filter((i-> projects.get(i).getProjectId().equals(projectId))).findFirst().getAsInt();
+
+        
         WorkItem w = new WorkItem(projectId+"-"+projects.get(projectIndex).getWorkItemCount(), workItemName, workItemDesc);
         projects.get(projectIndex).setWorkItemCount(projects.get(projectIndex).getWorkItemCount()+1);
         projects.get(projectIndex).getWorkItems().add(w);

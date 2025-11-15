@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create New Project</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <style>
+        body {
+            background-color: #f4f4f4; /* Light grey background */
+        }
+        .container {
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-wrapper red"> <a href="#" class="brand-logo center">Project Dashboard</a>
+        <ul class="left">
+            <li>
+                <a th:href="@{/}" title="Back to Projects">
+                    <i class="material-icons">chevron_left</i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="row">
+        <div class="col s12 m8 offset-m2">
+
+            <div class="card-panel">
+
+                <h4 class="header center-align" style="margin-bottom: 2rem;">
+                    Create a New Project
+                </h4>
+
+                <form th:action="@{/project/new}" th:object="${project}" method="post">
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="projectId" type="text" th:field="*{projectId}" class="validate" required>
+                            <label for="projectId">Project Id</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="projectName" type="text" th:field="*{projectName}" class="validate" required>
+                            <label for="projectName">Project Name</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="projectDescription" th:field="*{projectDescription}" class="materialize-textarea"></textarea>
+                            <label for="projectDescription">Project Description (Optional)</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12 center-align">
+                            <button class="btn-large waves-effect waves-light red" type="submit" name="action">
+                                Create Project
+                                <i class="material-icons right">add</i>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+<script>
+        $(document).ready(function() {
+            // Initialize any components if needed, e.g., character counters
+            // M.CharacterCounter.init(document.querySelectorAll('#projectDescription'));
+        });
+    </script>
+
+</body>
+</html>
