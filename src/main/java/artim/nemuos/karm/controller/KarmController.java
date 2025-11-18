@@ -1,6 +1,5 @@
 package artim.nemuos.karm.controller;
 
-import artim.nemuos.karm.KarmApp;
 import artim.nemuos.karm.model.Project;
 import artim.nemuos.karm.model.WorkItem;
 import com.google.gson.Gson;
@@ -9,17 +8,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 @Controller
@@ -85,18 +82,28 @@ public class KarmController {
     public void dltProject(String projectId, String projectName, String projectDescription){
         //dlt the project based on projectid
     }
-    public String crtWorkitem(String projectId, String workItemName, String workItemDesc, Model model){
+    @GetMapping("/workitem/new/{projectId}")
+    public String crtWorkitemPage(@PathVariable String projectId, @ModelAttribute WorkItem workitem, Model model) {
+        model.addAttribute("workitem", workitem);
+        model.addAttribute("projectId", projectId);
+        return "newWorkItem";
+    }
+    @PostMapping("/workitem/new/{projectId}")
+    public RedirectView crtWorkitem(@PathVariable String projectId, @ModelAttribute("workitem") WorkItem workItem, Model model) throws IOException {
 
         // intStream to simply process int values other was another logic would have been needed to convert object index to int
         int projectIndex = IntStream.range(0, projects.size()).filter((i-> projects.get(i).getProjectId().equals(projectId))).findFirst().getAsInt();
 
-        
-        WorkItem w = new WorkItem(projectId+"-"+projects.get(projectIndex).getWorkItemCount(), workItemName, workItemDesc);
+
+        WorkItem w = new WorkItem(projectId+"-"+projects.get(projectIndex).getWorkItemCount(), workItem.getWorkItemTitle(), workItem.getWorkItemDescription());
         projects.get(projectIndex).setWorkItemCount(projects.get(projectIndex).getWorkItemCount()+1);
-        projects.get(projectIndex).getWorkItems().add(w);
+        ArrayList<WorkItem> wList = (ArrayList<WorkItem>) projects.get(projectIndex).getWorkItems();
+        wList.add(w);
+        projects.get(projectIndex).setWorkItems(wList);
         projects.get(projectIndex).setLastModifiedOn(java.time.Instant.now().toString());
+        saveProjects();
         model.addAttribute("projects", projects);
-        return "index";
+        return new RedirectView("/");
     }
     public void updWorkitem(String workItemId, String projectName, String projectDescription){
 
