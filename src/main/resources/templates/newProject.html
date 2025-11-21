@@ -1,95 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Create New Project</title>
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-    <style>
-        body {
-            background-color: #f4f4f4; /* Light grey background */
-        }
-        .container {
-            margin-top: 3rem;
-        }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: mainLayout(~{::pageContent})}">
+<head><title>New Project</title> </head>
 <body>
+<div th:fragment="pageContent">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-folder-plus me-2"></i>Create New Project</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/project/new}" th:object="${project}" method="post">
 
-<nav>
-    <div class="nav-wrapper red"> <a href="#" class="brand-logo center">Project Dashboard</a>
-        <ul class="left">
-            <li>
-                <a th:href="@{/}" title="Back to Projects">
-                    <i class="material-icons">chevron_left</i>
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<main class="container">
-    <div class="row">
-        <div class="col s12 m8 offset-m2">
-
-            <div class="card-panel">
-
-                <h4 class="header center-align" style="margin-bottom: 2rem;">
-                    Create a New Project
-                </h4>
-
-                <form th:action="@{/project/new}" th:object="${project}" method="post">
-
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="projectId" type="text" th:field="*{projectId}" class="validate" required>
-                            <label for="projectId">Project Id</label>
+                        <div class="mb-3">
+                            <label for="projectId" class="form-label">Project ID (Unique)</label>
+                            <input type="text" class="form-control" id="projectId" th:field="*{projectId}" placeholder="e.g., PRJ-001" required>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="projectName" type="text" th:field="*{projectName}" class="validate" required>
-                            <label for="projectName">Project Name</label>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <textarea id="projectDescription" th:field="*{projectDescription}" class="materialize-textarea"></textarea>
-                            <label for="projectDescription">Project Description (Optional)</label>
+                        <div class="mb-3">
+                            <label for="projectName" class="form-label">Project Name</label>
+                            <input type="text" class="form-control" id="projectName" th:field="*{projectName}" placeholder="My Awesome App" required>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col s12 center-align">
-                            <button class="btn-large waves-effect waves-light red" type="submit" name="action">
-                                Create Project
-                                <i class="material-icons right">add</i>
-                            </button>
+                        <div class="mb-3">
+                            <label for="projectDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="projectDescription" th:field="*{projectDescription}" rows="3" placeholder="What is this project about?"></textarea>
                         </div>
-                    </div>
 
-                </form>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Save Project</button>
+                            <a href="/" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</main>
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-<script>
-        $(document).ready(function() {
-            // Initialize any components if needed, e.g., character counters
-            // M.CharacterCounter.init(document.querySelectorAll('#projectDescription'));
-        });
-    </script>
-
+</div>
 </body>
 </html>

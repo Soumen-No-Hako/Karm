@@ -74,6 +74,7 @@ public class KarmController {
     public void updProject(String projectId, String projectName, String projectDescription){
 
     }
+    @GetMapping("/project/{projectId}")
     public String showProject(String projectId, Model model){
         // Show the desired project based on projectId and redirect to project page
         model.addAttribute("project", projects.stream().filter(p->p.getProjectId().equals(projectId)).findFirst().get());
@@ -108,9 +109,12 @@ public class KarmController {
     public void updWorkitem(String workItemId, String projectName, String projectDescription){
 
     }
-    public void showWorkitem(String workItemId){
-
-
+    @GetMapping("/workitem/{workItemId}")
+    public String showWorkitem(@PathVariable String workItemId, Model model){
+    Project p = projects.stream().filter(prjt -> prjt.getProjectId().equals(workItemId.split("-")[0])).findFirst().get();
+    WorkItem w = p.getWorkItems().stream().filter(wit -> wit.getWorkItemId().equals(workItemId)).findFirst().get();
+    model.addAttribute("workitem", w);
+    return "workItemView";
     }
     public void dltWorkitem(String workItemId){
 

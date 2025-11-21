@@ -1,94 +1,36 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Create New Project</title>
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-    <style>
-        body {
-            background-color: #f4f4f4; /* Light grey background */
-        }
-        .container {
-            margin-top: 3rem;
-        }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: mainLayout(~{::pageContent})}">
+<head><title>New Work Item</title> </head>
 <body>
+<div th:fragment="pageContent">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-tasks me-2"></i>Add Work Item</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/workitem/new/{pid}(pid=${projectId})}" th:object="${workitem}" method="post">
 
-<nav>
-    <div class="nav-wrapper red"> <a href="#" class="brand-logo center">Project Dashboard</a>
-        <ul class="left">
-            <li>
-                <a th:href="@{/}" title="Back to Projects">
-                    <i class="material-icons">chevron_left</i>
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<main class="container">
-    <div class="row">
-        <div class="col s12 m8 offset-m2">
-
-            <div class="card-panel">
-
-                <h4 class="header center-align" style="margin-bottom: 2rem;">
-                    Create a New Project
-                </h4>
-
-                <form th:action="@{'/workitem/new/'+${projectId}}" th:object="${workitem}" method="post">
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="workItemId" type="text" th:field="*{workItemId}" th:attr="value=${projectId}" class="validate">
-                            <label for="workItemId">WorkItem Id (Default ProjectId)</label>
+                        <div class="mb-3">
+                            <label for="workItemTitle" class="form-label">Task Title</label>
+                            <input type="text" class="form-control" id="workItemTitle" th:field="*{workItemTitle}" placeholder="Fix Login Bug" required>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="workItemTitle" type="text" th:field="*{workItemTitle}" class="validate" required>
-                            <label for="workItemTitle">WorkItem Name</label>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <textarea id="workItemDescription" th:field="*{workItemDescription}" class="materialize-textarea"></textarea>
-                            <label for="workItemDescription">WorkItem Description (Optional)</label>
+                        <div class="mb-3">
+                            <label for="workItemDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="workItemDescription" th:field="*{workItemDescription}" rows="3" required></textarea>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col s12 center-align">
-                            <button class="btn-large waves-effect waves-light red" type="submit" name="action">
-                                ${projectId} -> Create WorkItem
-                                <i class="material-icons right">add</i>
-                            </button>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-info text-white">Create Task</button>
+                            <a href="/" class="btn btn-outline-secondary">Cancel</a>
                         </div>
-                    </div>
-
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</main>
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-<script>
-        $(document).ready(function() {
-            // Initialize any components if needed, e.g., character counters
-            // M.CharacterCounter.init(document.querySelectorAll('#projectDescription'));
-        });
-    </script>
-
+</div>
 </body>
 </html>
