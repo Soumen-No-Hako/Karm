@@ -106,4 +106,19 @@ public class Project {
         this.workItems.add(workItem);
         this.workItemCount = this.workItems.size();
     }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "projectId='" + projectId + '\'' +
+                ", projectName='" + projectName + '\'' +
+                ", projectDescription='" + projectDescription + '\'' +
+                ", createdOn='" + createdOn + '\'' +
+                ", lastModifiedOn='" + lastModifiedOn + '\'' +
+                ", owner='" + owner + '\'' +
+                ", workItems=" + workItems +
+                ", workItemCount=" + workItemCount +
+                ", projectStatus='" + projectStatus + '\'' +
+                '}';
+    }
 }

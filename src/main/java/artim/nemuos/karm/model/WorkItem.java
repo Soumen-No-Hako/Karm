@@ -73,4 +73,7 @@ public class WorkItem {
         this.lastModifiedOn = java.time.Instant.now().toString();
         this.status = "TO-DO";
     }
+public WorkItem(){
+
+}
 }
