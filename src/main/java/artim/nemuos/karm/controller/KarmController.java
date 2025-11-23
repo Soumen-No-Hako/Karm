@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 @Controller
@@ -128,10 +129,33 @@ public class KarmController {
     public void dltWorkitem(String workItemId){
 
     }
-    public void updProjectStatus(String projectId, String projectStatus){
+    @PostMapping("/project/status")
+    public RedirectView updProjectStatus(@ModelAttribute String projectId, @ModelAttribute String projectStatus) throws IOException {
+        projects.stream()
+                .filter(p -> p.getProjectId().equals(projectId))
+                .findFirst()
+                .ifPresent(p -> p.setProjectStatus(projectStatus.toUpperCase(Locale.ROOT)));
 
+        saveProjects(); // Save to JSON
+        return new RedirectView("/");
     }
-    public void updWorkitemStatus(String workItemId, String workItemStatus){
+    @PostMapping("/workitem/status")
+    public RedirectView updateWorkItemStatus(@ModelAttribute String projectId, @ModelAttribute String workItemId,@ModelAttribute String status) throws IOException {
+        // Find the project
+        Project targetProject = projects.stream()
+                .filter(p -> p.getProjectId().equals(projectId))
+                .findFirst()
+                .orElse(null);
 
+        if (targetProject != null) {
+            // Find work item inside the project
+            targetProject.getWorkItems().stream()
+                    .filter(w -> w.getWorkItemId().equals(workItemId))
+                    .findFirst()
+                    .ifPresent(w -> w.setStatus(status));
+
+            saveProjects(); // Save to JSON
+        }
+        return new RedirectView("/");
     }
 }

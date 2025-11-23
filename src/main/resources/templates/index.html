@@ -26,7 +26,17 @@
                          th:attr="data-bs-target='#panel-'+${p.projectId}">
 
                         <div class="d-flex justify-content-between mb-3">
-                            <span class="badge bg-light text-dark border" th:text="${p.projectStatus}">NEW</span>
+                            <form action="/project/status" method="post">
+                                <input type="hidden" name="projectId" th:value="${p.projectId}">
+                                <select name="status" class="form-select form-select-sm fw-bold"  onclick="event.stopPropagation(); return false;"
+                                        style="width: auto;"
+                                        onchange="this.form.submit()"
+                                        th:classappend="${p.projectStatus == 'NEW' ? 'text-primary bg-light' : (p.projectStatus == 'ACTIVE' ? 'text-success bg-light' : 'text-secondary bg-light')}">
+                                    <option value="NEW" th:selected="${p.projectStatus == 'NEW'}">NEW</option>
+                                    <option value="ACTIVE" th:selected="${p.projectStatus == 'ACTIVE'}">ACTIVE</option>
+                                    <option value="ARCHIVED" th:selected="${p.projectStatus == 'ARCHIVED'}">ARCHIVED</option>
+                                </select>
+                            </form>
                             <small class="text-muted" th:text="${#strings.substring(p.createdOn, 0, 10)}">Date</small>
                         </div>
                         <h4 class="card-title text-primary fw-bold" th:text="${p.projectName}">Project Name</h4>
@@ -63,16 +73,36 @@
                             <a th:if="${p.workItems.empty}" class="list-group-item text-center text-muted p-4">
                                 No work items yet.
                             </a>
-                            <a th:each="item : ${p.workItems}"
-                               th:href="@{/workitem/{id}(id=${item.workItemId})}"
-                               class="list-group-item list-group-item-action p-3">
+                            <div class="list-group shadow-sm">
+                                <div th:each="item : ${p.workItems}" class="list-group-item p-3">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <a th:href="@{/workitem/{id}(id=${item.workItemId})}"
+                                           class="text-decoration-none flex-grow-1">
+                                            <h6 class="mb-1 fw-bold text-dark" th:text="${item.workItemTitle}">Title</h6>
+                                            <p class="mb-0 small text-muted text-truncate" th:text="${item.workItemDescription}">Desc</p>
+                                            Current Status : <p class="mb-0 small text-muted text-truncate" th:text="${item.status}">Status</p>
+                                        </a>
                                 <div class="d-flex w-100 justify-content-between">
                                     <h6 class="mb-1 fw-bold text-dark" th:text="${item.workItemTitle}">Title</h6>
-                                    <small th:classappend="${item.status == 'TO-DO' ? 'text-warning' : 'text-success'}"
-                                           th:text="${item.status}">Status</small>
+                                    <div class="col-4 text-end" onclick="event.stopPropagation()">
+                                        <form action="/workitem/status" method="post">
+                                            <input type="hidden" name="projectId" th:value="${p.projectId}">
+                                            <input type="hidden" name="workItemId" th:value="${item.workItemId}">
+
+                                            <select name="status" class="form-select form-select-sm"  onclick="event.stopPropagation()"
+                                                    onchange="this.form.submit()"
+                                                    th:classappend="${item.status == 'TO-DO' ? 'border-warning text-warning' : (item.status == 'IN-PROGRESS' ? 'border-info text-info' : 'border-success text-success')}">
+                                                <option value="TO-DO" th:selected="${item.status == 'TO-DO'}">TO-DO</option>
+                                                <option value="IN-PROGRESS" th:selected="${item.status == 'IN-PROGRESS'}">In-Progress</option>
+                                                <option value="DONE" th:selected="${item.status == 'DONE'}">DONE</option>
+                                                <option value="CANCELED" th:selected="${item.status == 'CANCELED'}">Cancelled</option>
+                                            </select>
+                                        </form>
+                                    </div>
                                 </div>
-                                <p class="mb-1 small text-muted text-truncate" th:text="${item.workItemDescription}">Desc</p>
-                            </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

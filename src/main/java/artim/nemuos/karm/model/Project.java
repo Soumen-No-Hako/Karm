@@ -109,16 +109,16 @@ public class Project {
 
     @Override
     public String toString() {
-        return "Project{" +
+        return "Project\n\t{" +
                 "projectId='" + projectId + '\'' +
-                ", projectName='" + projectName + '\'' +
-                ", projectDescription='" + projectDescription + '\'' +
-                ", createdOn='" + createdOn + '\'' +
-                ", lastModifiedOn='" + lastModifiedOn + '\'' +
-                ", owner='" + owner + '\'' +
-                ", workItems=" + workItems +
-                ", workItemCount=" + workItemCount +
-                ", projectStatus='" + projectStatus + '\'' +
-                '}';
+                ",\n \tprojectName='" + projectName + '\'' +
+                ",\n \tprojectDescription='" + projectDescription + '\'' +
+                ",\n \tcreatedOn='" + createdOn + '\'' +
+                ",\n \tlastModifiedOn='" + lastModifiedOn + '\'' +
+                ",\n \towner='" + owner + '\'' +
+                ",\n \tworkItems=" + workItems +
+                ",\n \tworkItemCount=" + workItemCount +
+                ",\n \tprojectStatus='" + projectStatus + '\'' +
+                "\n}";
     }
 }
