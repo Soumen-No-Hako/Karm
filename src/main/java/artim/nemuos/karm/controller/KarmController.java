@@ -6,10 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.File;
@@ -23,14 +20,23 @@ import java.util.stream.IntStream;
 public class KarmController {
 
     static ArrayList<Project> projects;
+    static ArrayList<WorkItem> workItems;
 
-    public static void loadProjects() throws IOException {
+    static {
         Gson objectMapper = new Gson();
         if(!new File("projects.json").exists()){
-            new File("projects.json").createNewFile();
+            try {
+                new File("projects.json").createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        String json = Files.readString(Path.of("projects.json"));
-        System.out.println("Loaded JSON: " + json.length());
+        String json = null;
+        try {
+            json = Files.readString(Path.of("projects.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if(json.length()!=0) projects = objectMapper.fromJson(json, new TypeToken<ArrayList<Project>>() {}.getType());
     }
 
@@ -43,7 +49,6 @@ public class KarmController {
     }
     @GetMapping("/")
     public String homepage(Model model) throws IOException {
-        loadProjects();
         model.addAttribute("projects", projects);
         boolean EmptyProject = false;
         if(projects == null){
@@ -71,7 +76,8 @@ public class KarmController {
         model.addAttribute("projects", projects);
         return new RedirectView("/");
     }
-    public void updProject(String projectId, String projectName, String projectDescription){
+    @PatchMapping("/project/edit/{id}")
+    public void updProject(@PathVariable("id") String projectId, @ModelAttribute Project project){
 
     }
     @GetMapping("/project/{projectId}")
@@ -106,8 +112,11 @@ public class KarmController {
         model.addAttribute("projects", projects);
         return new RedirectView("/");
     }
-    public void updWorkitem(String workItemId, String projectName, String projectDescription){
-
+    @PatchMapping("/workitem/edit/{id}")
+    public void updWorkitem(@PathVariable("id") String workItemId, @ModelAttribute WorkItem workItem){
+    int workItemIndex = projects.stream().mapToInt(p -> p.getWorkItems().indexOf(
+            p.getWorkItems().stream().filter(wi -> wi.getWorkItemId().equals(workItemId)).findFirst().orElse(null)
+    )).filter(index -> index != -1).findFirst().orElse(-1);
     }
     @GetMapping("/workitem/{workItemId}")
     public String showWorkitem(@PathVariable String workItemId, Model model){
