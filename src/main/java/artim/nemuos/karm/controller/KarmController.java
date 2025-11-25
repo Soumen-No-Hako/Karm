@@ -1,6 +1,7 @@
 package artim.nemuos.karm.controller;
 
 import artim.nemuos.karm.model.Project;
+import artim.nemuos.karm.model.ProjectDTO;
 import artim.nemuos.karm.model.WorkItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,6 +40,21 @@ public class KarmController {
             throw new RuntimeException(e);
         }
         if(json.length()!=0) projects = objectMapper.fromJson(json, new TypeToken<ArrayList<Project>>() {}.getType());
+
+        if(!new File("workitems.json").exists()){
+            try {
+                new File("workitems.json").createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        json = null;
+        try {
+            json = Files.readString(Path.of("workitems.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if(json.length()!=0) workItems = objectMapper.fromJson(json, new TypeToken<ArrayList<WorkItem>>() {}.getType());
     }
 
     public void saveProjects() throws IOException {
@@ -47,6 +63,11 @@ public class KarmController {
         String jsonString = objectMapper.toJson(projects);
         // Write jsonString to projectFile
         Files.writeString(Path.of("projects.json"), jsonString);
+
+        File workItemFile = new File("workitems.json");
+        String jsonStringWI = objectMapper.toJson(workItems);
+        // Write json to workItemsFile
+        Files.writeString(Path.of("workitems.json"), jsonStringWI);
     }
     @GetMapping("/")
     public String homepage(Model model) throws IOException {
@@ -83,10 +104,24 @@ public class KarmController {
     }
     @GetMapping("/project/{projectId}")
     public String showProject(String projectId, Model model){
+
+        Project project = projects.stream().filter(p -> p.getProjectId().equals(projectId)).findFirst().get();
         // Show the desired project based on projectId and redirect to project page
-        model.addAttribute("project", projects.stream().filter(p->p.getProjectId().equals(projectId)).findFirst().get());
+        model.addAttribute("project", project);
         return "projectView";
     }
+
+    private static void fillWorkItems(ProjectDTO projectHolder) {
+        ArrayList<String> workItemIds = (ArrayList<String>) projectHolder.getWorkItemIds();
+        for(String workItemId : workItemIds)
+        {
+            WorkItem w = workItems.stream().filter(wi -> wi.getWorkItemId().equals(workItemId)).findFirst().get();
+            ArrayList<WorkItem> existingWorkList = (ArrayList<WorkItem>) projectHolder.getWorkItems();
+            existingWorkList.add(w);
+            projectHolder.setWorkItems(existingWorkList);
+        }
+    }
+
     public void dltProject(String projectId, String projectName, String projectDescription){
         //dlt the project based on projectid
     }
@@ -104,10 +139,14 @@ public class KarmController {
 
 
         WorkItem w = new WorkItem(projectId+"-"+projects.get(projectIndex).getWorkItemCount(), workItem.getWorkItemTitle(), workItem.getWorkItemDescription());
+        if(workItems==null) {
+            workItems = new ArrayList<>();
+        }
+        workItems.add(w);
         projects.get(projectIndex).setWorkItemCount(projects.get(projectIndex).getWorkItemCount()+1);
-        ArrayList<WorkItem> wList = (ArrayList<WorkItem>) projects.get(projectIndex).getWorkItems();
-        wList.add(w);
-        projects.get(projectIndex).setWorkItems(wList);
+        ArrayList<String> prjWorkItemIds = (ArrayList<String>) projects.get(projectIndex).getWorkItemIds();
+        prjWorkItemIds.add(w.getWorkItemId());
+        projects.get(projectIndex).setWorkItemIds(prjWorkItemIds);
         projects.get(projectIndex).setLastModifiedOn(java.time.Instant.now().toString());
         saveProjects();
         model.addAttribute("projects", projects);
@@ -121,8 +160,7 @@ public class KarmController {
     }
     @GetMapping("/workitem/{workItemId}")
     public String showWorkitem(@PathVariable String workItemId, Model model){
-    Project p = projects.stream().filter(prjt -> prjt.getProjectId().equals(workItemId.split("-")[0])).findFirst().get();
-    WorkItem w = p.getWorkItems().stream().filter(wit -> wit.getWorkItemId().equals(workItemId)).findFirst().get();
+    WorkItem w = workItems.stream().filter(wit -> wit.getWorkItemId().equals(workItemId)).findFirst().get();
     model.addAttribute("workitem", w);
     return "workItemView";
     }
@@ -140,22 +178,33 @@ public class KarmController {
         return new RedirectView("/");
     }
     @PostMapping("/workitem/status")
-    public RedirectView updateWorkItemStatus(@ModelAttribute String projectId, @ModelAttribute String workItemId,@ModelAttribute String status) throws IOException {
-        // Find the project
-        Project targetProject = projects.stream()
+    public RedirectView updateWorkItemStatus(@ModelAttribute String workItemId,@ModelAttribute String status) throws IOException {
+            // Find work item inside the project
+            workItems.stream()
+                    .filter(w -> w.getWorkItemId().equals(workItemId))
+                    .findFirst()
+                    .ifPresent(w -> w.setStatus(status));
+            saveProjects(); // Save to JSON
+        return new RedirectView("/");
+    }
+    @GetMapping("/workitems/{projectId}")
+    public String getWorkItemsFragment(@PathVariable String projectId, Model model) {
+        // 1. Find the project
+        Project project = projects.stream()
                 .filter(p -> p.getProjectId().equals(projectId))
                 .findFirst()
                 .orElse(null);
 
-        if (targetProject != null) {
-            // Find work item inside the project
-            targetProject.getWorkItems().stream()
-                    .filter(w -> w.getWorkItemId().equals(workItemId))
-                    .findFirst()
-                    .ifPresent(w -> w.setStatus(status));
-
-            saveProjects(); // Save to JSON
+        // 2. Add data to model
+        if (project != null) {
+            model.addAttribute("workItems", workItems.stream().filter(wi -> wi.getWorkItemId().startsWith(projectId)).toList());
+            model.addAttribute("projectId", projectId); // Needed for the hidden input in form
+        } else {
+            model.addAttribute("workItems", new ArrayList<>());
         }
-        return new RedirectView("/");
+
+        // 3. Return specifically the fragment, not the whole file
+        // Syntax: "filename :: fragmentName"
+        return "fragments/workItemList :: itemList";
     }
 }

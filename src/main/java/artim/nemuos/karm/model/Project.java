@@ -11,6 +11,20 @@ public class Project {
     private String lastModifiedOn;
     private String owner;
     private List<WorkItem> workItems;
+
+    public Project() {
+
+    }
+
+    public List<String> getWorkItemIds() {
+        return workItemIds;
+    }
+
+    public void setWorkItemIds(List<String> workItemIds) {
+        this.workItemIds = workItemIds;
+    }
+
+    private List<String> workItemIds;
     private int workItemCount;
     private String projectStatus;
 
@@ -96,6 +110,7 @@ public class Project {
         this.workItemCount = 1;
         this.projectStatus = "NEW";
         this.workItems = new ArrayList<>();
+        this.workItemIds = new ArrayList<>();
     }
     private void addWorkItem(WorkItem workItem){
         this.workItems.add(workItem);
@@ -104,7 +119,7 @@ public class Project {
     private void createWorkItem(String workItemId, String workItemTitle, String workItemDescription){
         WorkItem workItem = new WorkItem(workItemId, workItemTitle, workItemDescription);
         this.workItems.add(workItem);
-        this.workItemCount = this.workItems.size();
+        this.workItemCount += 1;
     }
 
     @Override

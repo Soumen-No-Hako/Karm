@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: mainLayout(~{::section})}">
-<head>
-    <title>Dashboard</title> </head>
+      th:replace="~{fragments/layout :: mainLayout(~{::pageContent})}">
+<head><title>Dashboard</title></head>
 <body>
-<section>
+<div th:fragment="pageContent">
     <div class="container-fluid p-4">
-
         <div class="d-flex justify-content-between align-items-center mb-5">
             <h3 class="fw-bold text-secondary">My Projects</h3>
             <a href="/project/new" class="btn btn-dark btn-lg shadow-sm">
@@ -20,96 +18,94 @@
 
         <div th:unless="${EmptyProject}" class="row row-cols-1 row-cols-md-2 g-4">
             <div class="col" th:each="p : ${projects}">
-                <div class="card h-100 shadow-sm border-0 hover-card" style="cursor: pointer;">
-                    <div class="card-body"
-                         data-bs-toggle="offcanvas"
-                         th:attr="data-bs-target='#panel-'+${p.projectId}">
 
-                        <div class="d-flex justify-content-between mb-3">
-                            <form action="/project/status" method="post">
-                                <input type="hidden" name="projectId" th:value="${p.projectId}">
-                                <select name="status" class="form-select form-select-sm fw-bold"  onclick="event.stopPropagation(); return false;"
-                                        style="width: auto;"
-                                        onchange="this.form.submit()"
-                                        th:classappend="${p.projectStatus == 'NEW' ? 'text-primary bg-light' : (p.projectStatus == 'ACTIVE' ? 'text-success bg-light' : 'text-secondary bg-light')}">
-                                    <option value="NEW" th:selected="${p.projectStatus == 'NEW'}">NEW</option>
-                                    <option value="ACTIVE" th:selected="${p.projectStatus == 'ACTIVE'}">ACTIVE</option>
-                                    <option value="ARCHIVED" th:selected="${p.projectStatus == 'ARCHIVED'}">ARCHIVED</option>
-                                </select>
-                            </form>
-                            <small class="text-muted" th:text="${#strings.substring(p.createdOn, 0, 10)}">Date</small>
-                        </div>
-                        <h4 class="card-title text-primary fw-bold" th:text="${p.projectName}">Project Name</h4>
-                        <p class="card-text text-secondary" th:text="${p.projectDescription}">Desc...</p>
+                <div class="card h-100 shadow-sm border-0 hover-card"
+                     style="cursor: pointer;"
+                     th:onclick="loadAndOpenPanel([[${p.projectId}]], [[${p.projectName}]])">
+
+                    <div class="card-header bg-white border-0 pt-3 pb-0">
                     </div>
-                    <div class="card-footer bg-white border-0 pb-3 pt-0">
-                        <hr>
-                        <div class="d-flex justify-content-between align-items-center">
+
+                    <div class="card-body pt-2">
+                        <h4 class="card-title text-primary fw-bold" th:text="${p.projectName}">Name</h4>
+                        <p class="card-text text-secondary" th:text="${p.projectDescription}">Desc</p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">
                                     <i class="fas fa-layer-group me-1"></i>
                                     <span th:text="${p.workItemCount}">0</span> Items
                                 </span>
-                            <a th:href="@{/workitem/new/{id}(id=${p.projectId})}" class="btn btn-outline-primary btn-sm position-relative" style="z-index: 10;">
-                                <i class="fas fa-plus me-1"></i> Create Workitem
-                            </a>
-                        </div>
+                        <a th:href="@{/workitem/new/{id}(id=${p.projectId})}" class="btn btn-outline-primary btn-sm position-relative" style="z-index: 10;">
+                            <i class="fas fa-plus me-1"></i> Create Workitem
+                        </a>
                     </div>
+
                 </div>
-
-                <div class="offcanvas offcanvas-end w-50" tabindex="-1"
-                     th:id="'panel-'+${p.projectId}">
-                    <div class="offcanvas-header bg-primary text-white">
-                        <h5 class="offcanvas-title" th:text="${p.projectName}">Project Name</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-                    </div>
-                    <div class="offcanvas-body bg-light">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h6 class="text-muted text-uppercase mb-0">Work Items</h6>
-                            <a th:href="@{/project/edit/{id}(id=${p.projectId})}" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-edit me-1"></i> Edit Project
-                            </a>
-                        </div>
-                        <div class="list-group shadow-sm">
-                            <a th:if="${p.workItems.empty}" class="list-group-item text-center text-muted p-4">
-                                No work items yet.
-                            </a>
-                            <div class="list-group shadow-sm">
-                                <div th:each="item : ${p.workItems}" class="list-group-item p-3">
-                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                        <a th:href="@{/workitem/{id}(id=${item.workItemId})}"
-                                           class="text-decoration-none flex-grow-1">
-                                            <h6 class="mb-1 fw-bold text-dark" th:text="${item.workItemTitle}">Title</h6>
-                                            <p class="mb-0 small text-muted text-truncate" th:text="${item.workItemDescription}">Desc</p>
-                                            Current Status : <p class="mb-0 small text-muted text-truncate" th:text="${item.status}">Status</p>
-                                        </a>
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1 fw-bold text-dark" th:text="${item.workItemTitle}">Title</h6>
-                                    <div class="col-4 text-end" onclick="event.stopPropagation()">
-                                        <form action="/workitem/status" method="post">
-                                            <input type="hidden" name="projectId" th:value="${p.projectId}">
-                                            <input type="hidden" name="workItemId" th:value="${item.workItemId}">
-
-                                            <select name="status" class="form-select form-select-sm"  onclick="event.stopPropagation()"
-                                                    onchange="this.form.submit()"
-                                                    th:classappend="${item.status == 'TO-DO' ? 'border-warning text-warning' : (item.status == 'IN-PROGRESS' ? 'border-info text-info' : 'border-success text-success')}">
-                                                <option value="TO-DO" th:selected="${item.status == 'TO-DO'}">TO-DO</option>
-                                                <option value="IN-PROGRESS" th:selected="${item.status == 'IN-PROGRESS'}">In-Progress</option>
-                                                <option value="DONE" th:selected="${item.status == 'DONE'}">DONE</option>
-                                                <option value="CANCELED" th:selected="${item.status == 'CANCELED'}">Cancelled</option>
-                                            </select>
-                                        </form>
-                                    </div>
-                                </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
-</section>
+
+        <div class="offcanvas offcanvas-end w-50" tabindex="-1" id="projectPanel">
+            <div class="offcanvas-header bg-primary text-white">
+                <h5 class="offcanvas-title" id="panelTitle">Loading...</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+            </div>
+
+            <div class="offcanvas-body bg-light p-0">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-white">
+                    <h6 class="text-muted text-uppercase mb-0">Work Items</h6>
+                    <a id="panelEditLink" href="#" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Edit Project
+                    </a>
+                </div>
+
+                <div id="panelContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <script th:inline="javascript">
+        function loadAndOpenPanel(projectId, projectName) {
+            // 1. Get Elements
+            const panelEl = document.getElementById('projectPanel');
+            const titleEl = document.getElementById('panelTitle');
+            const contentEl = document.getElementById('panelContent');
+            const editLink = document.getElementById('panelEditLink');
+
+            // 2. Set Static Data (Title and Edit Link)
+            titleEl.textContent = projectName;
+            editLink.href = '/project/edit/' + projectId;
+
+            // 3. Show Loading Spinner
+            contentEl.innerHTML = `
+                <div class="text-center py-5 mt-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Loading tasks...</p>
+                </div>
+            `;
+
+            // 4. Show the Panel (Bootstrap 5 API)
+            const bsOffcanvas = new bootstrap.Offcanvas(panelEl);
+            bsOffcanvas.show();
+
+            // 5. Fetch Data from Controller
+            fetch('/workitems/' + projectId)
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.text(); // Get HTML text
+                })
+                .then(html => {
+                    // 6. Inject HTML into the content div
+                    contentEl.innerHTML = html;
+                })
+                .catch(error => {
+                    contentEl.innerHTML = `<div class="alert alert-danger m-3">Error loading items.</div>`;
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</div>
 </body>
 </html>
