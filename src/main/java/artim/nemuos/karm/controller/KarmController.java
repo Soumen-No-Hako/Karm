@@ -1,7 +1,6 @@
 package artim.nemuos.karm.controller;
 
 import artim.nemuos.karm.model.Project;
-import artim.nemuos.karm.model.ProjectDTO;
 import artim.nemuos.karm.model.WorkItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -111,16 +110,6 @@ public class KarmController {
         return "projectView";
     }
 
-    private static void fillWorkItems(ProjectDTO projectHolder) {
-        ArrayList<String> workItemIds = (ArrayList<String>) projectHolder.getWorkItemIds();
-        for(String workItemId : workItemIds)
-        {
-            WorkItem w = workItems.stream().filter(wi -> wi.getWorkItemId().equals(workItemId)).findFirst().get();
-            ArrayList<WorkItem> existingWorkList = (ArrayList<WorkItem>) projectHolder.getWorkItems();
-            existingWorkList.add(w);
-            projectHolder.setWorkItems(existingWorkList);
-        }
-    }
 
     public void dltProject(String projectId, String projectName, String projectDescription){
         //dlt the project based on projectid
@@ -180,10 +169,12 @@ public class KarmController {
     @PostMapping("/workitem/status")
     public RedirectView updateWorkItemStatus(@ModelAttribute String workItemId,@ModelAttribute String status) throws IOException {
             // Find work item inside the project
-            workItems.stream()
-                    .filter(w -> w.getWorkItemId().equals(workItemId))
-                    .findFirst()
-                    .ifPresent(w -> w.setStatus(status));
+        int workitemIndex = workItems.stream()
+                .mapToInt(wi -> wi.getWorkItemId().equals(workItemId) ? workItems.indexOf(wi) : -1)
+                .filter(index -> index != -1)
+                .findFirst()
+                .orElse(-1);
+        workItems.get(workitemIndex).setStatus(status);
             saveProjects(); // Save to JSON
         return new RedirectView("/");
     }
