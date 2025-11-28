@@ -1,0 +1,9 @@
+# Code owners for Karm repository
+# Lines are: <pattern> <owner> [<owner>...]
+# Use @username or @org/team (or an email address). Comments begin with '#'.
+
+# Default owner for everything in the repo
+* @Soumen-No-Hako
+
+# All markdown docs
+#*.md @Soumen-No-Hako
