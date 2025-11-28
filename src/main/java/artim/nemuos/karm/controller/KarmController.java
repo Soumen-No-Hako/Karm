@@ -157,24 +157,29 @@ public class KarmController {
 
     }
     @PostMapping("/project/status")
-    public RedirectView updProjectStatus(@ModelAttribute String projectId, @ModelAttribute String projectStatus) throws IOException {
-        projects.stream()
-                .filter(p -> p.getProjectId().equals(projectId))
+    public RedirectView updProjectStatus(@ModelAttribute Project p) throws IOException {
+        System.out.println("Updating project ID: " + p.getProjectId() + " to status: " + p.getProjectStatus());
+        int prjtIndex = projects.stream()
+                .mapToInt(pp -> pp.getProjectId().equals(p.getProjectId()) ? projects.indexOf(pp) : -1)
+                .filter(index -> index != -1)
                 .findFirst()
-                .ifPresent(p -> p.setProjectStatus(projectStatus.toUpperCase(Locale.ROOT)));
+                .orElse(-1);
+        projects.get(prjtIndex).setProjectStatus(p.getProjectStatus().toUpperCase(Locale.ROOT));
 
         saveProjects(); // Save to JSON
         return new RedirectView("/");
     }
     @PostMapping("/workitem/status")
-    public RedirectView updateWorkItemStatus(@ModelAttribute String workItemId,@ModelAttribute String status) throws IOException {
+    public RedirectView updateWorkItemStatus(@ModelAttribute WorkItem item) throws IOException {
             // Find work item inside the project
+        System.out.println("Updating work item ID: " + item.getWorkItemId() + " to status: " + item.getStatus());
         int workitemIndex = workItems.stream()
-                .mapToInt(wi -> wi.getWorkItemId().equals(workItemId) ? workItems.indexOf(wi) : -1)
+                .mapToInt(wi -> wi.getWorkItemId().equals(item.getWorkItemId()) ? workItems.indexOf(wi) : -1)
                 .filter(index -> index != -1)
                 .findFirst()
                 .orElse(-1);
-        workItems.get(workitemIndex).setStatus(status);
+        workItems.get(workitemIndex).setStatus(item.getStatus());
+        workItems.get(workitemIndex).setLastModifiedOn(java.time.Instant.now().toString());
             saveProjects(); // Save to JSON
         return new RedirectView("/");
     }
