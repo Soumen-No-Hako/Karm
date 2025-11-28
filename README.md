@@ -7,20 +7,21 @@ A Java application to create work items and project structures, and to keep trac
 
 ## Table of Contents
 
-- About
-- Key Features
-- Tech Stack
-- Getting Started
-  - Prerequisites
-  - Clone & Build
-  - Run
-- Usage Examples
-- Configuration
-- Contributing
-- Roadmap
-- License
-- Contact
-- Sponsor
+- [About](#about)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Clone & Build](#clone--build)
+  - [Run](#run)
+- [Usage Examples](#usage-examples)
+- [Controller and URLs](#controller-and-urls)
+- [Sponsors](#sponsors)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Contact](#contact)
 
 ## About
 
@@ -54,25 +55,17 @@ These steps assume a standard Java-based project layout. If your project uses a 
 - Maven or Gradle (if used by project)
 - Git
 
-### Clone
+### Clone & Build
 
 ```bash
 git clone https://github.com/Soumen-No-Hako/Karm.git
 cd Karm
 ```
 
-### Build
-
-If the project uses Maven:
+project uses Maven:
 
 ```bash
 mvn clean package
-```
-
-If the project uses Gradle:
-
-```bash
-./gradlew build
 ```
 
 If there is no assembled jar, open the project in your IDE (IntelliJ IDEA, Eclipse) and run the main application class.
@@ -91,9 +84,14 @@ Or run from your IDE using the project's main class.
 
 - Create a new project: use the UI
 - Add work items: add tasks under a project with description
+- Update status: mark tasks as in-progress or done to track progress.
 - View dashboard: see a concise list of projects and outstanding tasks.
 
-(Exact commands and UI flows depend on the present project structure — see the README’s adjustments below after inspecting the codebase.)
+## Sponsors
+
+If you'd like to support the development of Karm, thank you — every contribution helps.
+
+- PayPal (PayPal.Me link): https://paypal.me/SoumenMitra2
 
 ## Configuration
 
@@ -115,7 +113,11 @@ Please follow the existing code style and add clear commit messages. For larger 
 
 Planned improvements:
 
-- Command prompt + Karm
+- Import/Export project data (JSON, CSV)
+- Basic analytics / progress charts
+- User accounts and multi-user collaboration
+- Integrations: calendar, issue trackers
+- Mobile-friendly UI
 
 If you'd like to prioritize items, open issues or comment on existing ones.
 
@@ -133,13 +135,5 @@ This project is licensed under the Apache License 2.0. See the LICENSE file for 
 ## Contact
 
 Project maintained by Soumen-No-Hako — https://github.com/Soumen-No-Hako
-
-## Sponsor
-
-If you'd like to support the development of Karm, thank you — every contribution helps.
-
-Preferred methods (place your details in the placeholders below):
-
-- PayPal (PayPal.Me link): https://paypal.me/SoumenMitra2
 
 Thank you for using Karm. Contributions and feedback are highly appreciated.
