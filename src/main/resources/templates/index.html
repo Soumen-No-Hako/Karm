@@ -12,35 +12,53 @@
             </a>
         </div>
 
-        <div th:if="${EmptyProject}" class="text-center py-5 bg-white rounded shadow-sm">
+        <div th:if="${EmptyProject}" class="text-center py-5 bg-white rounded-4 shadow-sm">
             <h4 class="text-muted">No projects found. Create one to get started!</h4>
         </div>
 
         <div th:unless="${EmptyProject}" class="row row-cols-1 row-cols-md-2 g-4">
             <div class="col" th:each="p : ${projects}">
 
-                <div class="card h-100 shadow-sm border-0 hover-card"
+                <div class="card h-100 shadow-sm border border-success border-2 hover-card"
                      style="cursor: pointer;"
                      th:onclick="loadAndOpenPanel([[${p.projectId}]], [[${p.projectName}]])">
 
-                    <div class="card-header bg-white border-0 pt-3 pb-0">
+                    <div class="card-header bg-white border-0 pt-3 pb-0" th:text="${p.projectId}">
                     </div>
 
                     <div class="card-body pt-2">
                         <h4 class="card-title text-primary fw-bold" th:text="${p.projectName}">Name</h4>
                         <p class="card-text text-secondary" th:text="${p.projectDescription}">Desc</p>
+                        Current State: <p class="card-text text-secondary"
+                           th:text="${p.projectStatus}">Status</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">
                                     <i class="fas fa-layer-group me-1"></i>
-                                    <span th:text="${p.workItemCount}">0</span> Items
+                                    <span th:text="${p.workitemContainerSize}">0</span> Work Items
                                 </span>
-                        <a th:href="@{/workitem/new/{id}(id=${p.projectId})}" class="btn btn-outline-primary btn-sm position-relative" style="z-index: 10;">
+                        <div class="ms-3" style="z-index: 10;" onclick="event.stopPropagation()">
+                            <form action="/project/status" method="post">
+                                <input type="hidden" name="projectId" th:value="${p.projectId}">
+
+                                <select name="projectStatus" class="form-select form-select-sm fw-bold"
+                                        onchange="this.form.submit()"
+                                        th:classappend="${p.projectStatus == 'DONE' ? 'text-success border-success' :
+                                                 (p.projectStatus == 'IN-PROGRESS' ? 'text-info border-info' : 'text-warning border-warning')}">
+                                    <option value="TO-DO" th:selected="${p.projectStatus == 'TO-DO'}">To Do</option>
+                                    <option value="IN-PROGRESS" th:selected="${p.projectStatus == 'IN-PROGRESS'}">In Progress</option>
+                                    <option value="DONE" th:selected="${p.projectStatus == 'DONE'}">Done</option>
+                                    <option value="CANCELED" th:selected="${p.projectStatus == 'CANCELED'}">Cancelled</option>
+                                </select>
+                            </form>
+                        </div>
+                        <a th:href="@{/workitem/new/{id}(id=${p.projectId})}" class="btn btn-outline-primary btn-sm position-relative" style="z-index: 10;" onclick="event.stopPropagation()">
                             <i class="fas fa-plus me-1"></i> Create Workitem
                         </a>
                     </div>
 
                 </div>
+
             </div>
         </div>
 
