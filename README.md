@@ -20,6 +20,7 @@ A Java application to create work items and project structures, and to keep trac
 - Roadmap
 - License
 - Contact
+- Sponsor
 
 ## About
 
@@ -132,5 +133,13 @@ This project is licensed under the Apache License 2.0. See the LICENSE file for 
 ## Contact
 
 Project maintained by Soumen-No-Hako — https://github.com/Soumen-No-Hako
+
+## Sponsor
+
+If you'd like to support the development of Karm, thank you — every contribution helps.
+
+Preferred methods (place your details in the placeholders below):
+
+- PayPal (PayPal.Me link): https://paypal.me/SoumenMitra2
 
 Thank you for using Karm. Contributions and feedback are highly appreciated.
