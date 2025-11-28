@@ -27,6 +27,7 @@ public class Project {
     private List<String> workItemIds;
     private int workItemCount;
     private String projectStatus;
+    private int workitemContainerSize;
 
     public String getProjectStatus() {
         return projectStatus;
@@ -80,6 +81,14 @@ public class Project {
         return owner;
     }
 
+    public int getWorkitemContainerSize() {
+        return workitemContainerSize;
+    }
+
+    public void setWorkitemContainerSize(int workitemContainerSize) {
+        this.workitemContainerSize = workitemContainerSize;
+    }
+
     public void setOwner(String owner) {
         this.owner = owner;
     }
@@ -111,6 +120,7 @@ public class Project {
         this.projectStatus = "NEW";
         this.workItems = new ArrayList<>();
         this.workItemIds = new ArrayList<>();
+        this.workitemContainerSize = 0;
     }
     private void addWorkItem(WorkItem workItem){
         this.workItems.add(workItem);

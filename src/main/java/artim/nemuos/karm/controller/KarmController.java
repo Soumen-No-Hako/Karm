@@ -137,6 +137,7 @@ public class KarmController {
         prjWorkItemIds.add(w.getWorkItemId());
         projects.get(projectIndex).setWorkItemIds(prjWorkItemIds);
         projects.get(projectIndex).setLastModifiedOn(java.time.Instant.now().toString());
+        projects.get(projectIndex).setWorkitemContainerSize(projects.get(projectIndex).getWorkItemIds().size());
         saveProjects();
         model.addAttribute("projects", projects);
         return new RedirectView("/");
