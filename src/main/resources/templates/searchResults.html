@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: mainLayout(~{::pageContent})}">
+
+<head>
+    <title>Search Results</title>
+</head>
+
+<body>
+    <div th:fragment="pageContent">
+        <div class="container-fluid p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold text-secondary">Search Results</h3>
+                    <p class="text-muted">
+                        Showing results for "<span class="fw-bold text-dark" th:text="${query}">query</span>"
+                        <span th:if="${filterType != 'ALL'}" th:text="'(Filter: ' + ${filterType} + ')'"></span>
+                    </p>
+                </div>
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+
+            <!-- No Results -->
+            <div th:if="${projects.empty and workItems.empty}" class="text-center py-5 bg-white rounded-4 shadow-sm">
+                <h4 class="text-muted">No results found matching your criteria.</h4>
+                <p class="text-secondary">Try adjusting your search terms or filter.</p>
+            </div>
+
+            <!-- Projects Section -->
+            <div th:if="${!projects.empty}" class="mb-5">
+                <h4 class="fw-bold text-primary mb-3"><i class="fas fa-folder me-2"></i>Matching Projects</h4>
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    <div class="col" th:each="p : ${projects}">
+                        <div class="card h-100 shadow-sm border border-success border-2">
+                            <div class="card-header bg-white border-0 pt-3 pb-0" th:text="${p.projectId}"></div>
+                            <div class="card-body pt-2">
+                                <h4 class="card-title text-primary fw-bold" th:text="${p.projectName}">Name</h4>
+                                <p class="card-text text-secondary" th:text="${p.projectDescription}">Desc</p>
+                                <span class="badge bg-secondary" th:text="${p.projectStatus}">Status</span>
+                            </div>
+                            <div class="card-footer bg-white border-0 pb-3">
+                                <a th:href="@{/workitem/new/{id}(id=${p.projectId})}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-plus me-1"></i> Add Work Item
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Items Section -->
+            <div th:if="${!workItems.empty}">
+                <h4 class="fw-bold text-info mb-3"><i class="fas fa-tasks me-2"></i>Matching Work Items</h4>
+                <div class="list-group shadow-sm">
+                    <a th:each="w : ${workItems}" th:href="@{/workitem/{id}(id=${w.workItemId})}"
+                        class="list-group-item list-group-item-action p-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1 fw-bold text-dark" th:text="${w.workItemTitle}">Title</h5>
+                            <small class="text-muted" th:text="${w.workItemId}">ID</small>
+                        </div>
+                        <p class="mb-1 text-secondary" th:text="${w.workItemDescription}">Description</p>
+                        <small class="badge bg-light text-dark border" th:text="${w.status}">Status</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
