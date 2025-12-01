@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: mainLayout(~{::pageContent})}">
+<head><title>New Project</title> </head>
+<body>
+<div th:fragment="pageContent">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-folder-plus me-2"></i>Create New Project</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/project/new}" th:object="${project}" method="post">
+
+                        <div class="mb-3">
+                            <label for="projectId" class="form-label">Project ID (Unique)</label>
+                            <input type="text" class="form-control" id="projectId" th:field="*{projectId}" placeholder="e.g., PRJ-001" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="projectName" class="form-label">Project Name</label>
+                            <input type="text" class="form-control" id="projectName" th:field="*{projectName}" placeholder="My Awesome App" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="projectDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="projectDescription" th:field="*{projectDescription}" rows="3" placeholder="What is this project about?"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Save Project</button>
+                            <a href="/" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -74,13 +74,47 @@ public class KarmController {
     }
 
     @GetMapping("/")
-    public String homepage(Model model) throws IOException {
-        model.addAttribute("projects", projects);
-        boolean EmptyProject = false;
-        if (projects == null) {
-            EmptyProject = true;
+    public String homepage(@RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "ALL") String filterType,
+            Model model) throws IOException {
+        if (query != null && !query.trim().isEmpty()) {
+            String lowerQuery = query.toLowerCase();
+            ArrayList<Project> matchingProjects = new ArrayList<>();
+            ArrayList<WorkItem> matchingWorkItems = new ArrayList<>();
+
+            if ("ALL".equals(filterType) || "PROJECT".equals(filterType)) {
+                if (projects != null) {
+                    projects.stream()
+                            .filter(p -> p.getProjectName().toLowerCase().contains(lowerQuery) ||
+                                    p.getProjectDescription().toLowerCase().contains(lowerQuery))
+                            .forEach(matchingProjects::add);
+                }
+            }
+
+            if ("ALL".equals(filterType) || "WORKITEM".equals(filterType)) {
+                if (workItems != null) {
+                    workItems.stream()
+                            .filter(w -> w.getWorkItemTitle().toLowerCase().contains(lowerQuery) ||
+                                    w.getWorkItemDescription().toLowerCase().contains(lowerQuery))
+                            .forEach(matchingWorkItems::add);
+                }
+            }
+
+            model.addAttribute("query", query);
+            model.addAttribute("filterType", filterType);
+            model.addAttribute("projects", matchingProjects);
+            model.addAttribute("workItems", matchingWorkItems);
+            model.addAttribute("isSearch", true);
+            model.addAttribute("EmptyProject", false);
+        } else {
+            model.addAttribute("projects", projects);
+            boolean EmptyProject = false;
+            if (projects == null) {
+                EmptyProject = true;
+            }
+            model.addAttribute("EmptyProject", EmptyProject);
+            model.addAttribute("isSearch", false);
         }
-        model.addAttribute("EmptyProject", EmptyProject);
         return "index";
     }
 
@@ -223,37 +257,5 @@ public class KarmController {
         // 3. Return specifically the fragment, not the whole file
         // Syntax: "filename :: fragmentName"
         return "fragments/workItemList :: itemList";
-    }
-
-    @GetMapping("/search")
-    public String search(@RequestParam String query, @RequestParam(defaultValue = "ALL") String filterType,
-            Model model) {
-        String lowerQuery = query.toLowerCase();
-        ArrayList<Project> matchingProjects = new ArrayList<>();
-        ArrayList<WorkItem> matchingWorkItems = new ArrayList<>();
-
-        if ("ALL".equals(filterType) || "PROJECT".equals(filterType)) {
-            if (projects != null) {
-                projects.stream()
-                        .filter(p -> p.getProjectName().toLowerCase().contains(lowerQuery) ||
-                                p.getProjectDescription().toLowerCase().contains(lowerQuery))
-                        .forEach(matchingProjects::add);
-            }
-        }
-
-        if ("ALL".equals(filterType) || "WORKITEM".equals(filterType)) {
-            if (workItems != null) {
-                workItems.stream()
-                        .filter(w -> w.getWorkItemTitle().toLowerCase().contains(lowerQuery) ||
-                                w.getWorkItemDescription().toLowerCase().contains(lowerQuery))
-                        .forEach(matchingWorkItems::add);
-            }
-        }
-
-        model.addAttribute("query", query);
-        model.addAttribute("filterType", filterType);
-        model.addAttribute("projects", matchingProjects);
-        model.addAttribute("workItems", matchingWorkItems);
-        return "searchResults";
     }
 }

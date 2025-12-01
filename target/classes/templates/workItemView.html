@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: mainLayout(~{::pagecontent})}">
+<head><title>Work Item View</title></head>
+<body>
+<div th:fragment="pagecontent">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <div class="d-flex justify-content-between mb-4">
+                            <a href="/" class="btn btn-light text-muted"><i class="fas fa-arrow-left"></i> Back</a>
+                            <span class="badge bg-warning text-dark fs-6" th:text="${workitem.status}">STATUS</span>
+                        </div>
+
+                        <h1 class="display-5 fw-bold mb-3" th:text="${workitem.workItemTitle}">Work Item Title</h1>
+
+                        <div class="text-muted mb-4">
+                            <i class="far fa-clock me-1"></i> Created: <span th:text="${#strings.substring(workitem.createdOn, 0, 10)}">Date</span>
+                            <span class="mx-2">|</span>
+                            <small>ID: <span th:text="${workitem.workItemId}">ID</span></small>
+                        </div>
+
+                        <hr>
+
+                        <div class="py-3">
+                            <h5 class="text-uppercase text-muted small fw-bold">Description</h5>
+                            <p class="lead" th:text="${workitem.workItemDescription}">
+                                Detailed description goes here.
+                            </p>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/workitem/edit/{id}(id=${workitem.workItemId})}" class="btn btn-primary">
+                                <i class="fas fa-edit me-2"></i> Edit Work Item
+                            </a>
+                            <a href="#" class="btn btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>>
+</body>
+</html>
