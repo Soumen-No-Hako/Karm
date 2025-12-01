@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: mainLayout(~{::pageContent})}">
+<head><title>Project View</title> </head>
+<body>
+<div th:fragment="pageContent" >
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${project.projectName}">Project</li>
+            </ol>
+        </nav>
+
+        <div class="bg-white p-4 rounded shadow-sm mb-4 border-start border-5 border-primary">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h1 class="display-6" th:text="${project.projectName}">Project Name</h1>
+                    <p class="lead text-muted" th:text="${project.projectDescription}">Description</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-secondary mb-2" th:text="${project.projectStatus}">STATUS</span>
+                    <br>
+                    <small class="text-muted">Owner: <span th:text="${project.owner}">Nemuos</span></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fas fa-list-check me-2"></i>Work Items</h4>
+            <a th:href="@{/workitem/new/{id}(id=${project.projectId})}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Task
+            </a>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col">Status</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Created</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${project.workItems.empty}">
+                            <td colspan="4" class="text-center py-4 text-muted">No work items yet.</td>
+                        </tr>
+                        <tr th:each="item : ${project.workItems}">
+                            <td>
+                                    <span class="badge rounded-pill"
+                                          th:classappend="${item.status == 'TO-DO' ? 'bg-warning text-dark' : 'bg-success'}"
+                                          th:text="${item.status}">
+                                    </span>
+                            </td>
+                            <td class="fw-bold" th:text="${item.workItemTitle}">Title</td>
+                            <td class="text-muted small" th:text="${item.workItemDescription}">Desc</td>
+                            <td th:text="${#strings.substring(item.createdOn, 0, 10)}">Date</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
