@@ -1,5 +1,8 @@
 package artim.nemuos.karm.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WorkItem {
     private String workItemId;
     private String workItemTitle;
@@ -7,6 +10,7 @@ public class WorkItem {
     private String status;
     private String createdOn;
     private String lastModifiedOn;
+    private List<String> comments;
 
     public String getWorkItemId() {
         return workItemId;
@@ -72,8 +76,24 @@ public class WorkItem {
         this.createdOn = java.time.Instant.now().toString();
         this.lastModifiedOn = java.time.Instant.now().toString();
         this.status = "TO-DO";
+        this.comments = new ArrayList<>();
     }
 public WorkItem(){
+        this.comments = new ArrayList<>();
 
 }
+
+    public java.util.List<String> getComments() {
+        return comments;
+    }
+
+    public void setComments(java.util.List<String> comments) {
+        this.comments = comments;
+    }
+
+    public void addComment(String comment) {
+        if (this.comments == null) this.comments = new ArrayList<>();
+        this.comments.add(comment);
+        this.lastModifiedOn = java.time.Instant.now().toString();
+    }
 }

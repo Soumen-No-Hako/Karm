@@ -37,6 +37,28 @@
                                 <i class="fas fa-edit me-2"></i> Edit Work Item
                             </a>
                             <a href="#" class="btn btn-outline-danger">Delete</a>
+                            <a th:href="@{/workitem/{id}/comment/new(id=${workitem.workItemId})}" class="btn btn-outline-secondary">
+                                <i class="fas fa-comment me-2"></i> Add Comment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h5 class="text-uppercase text-muted small fw-bold">Comments</h5>
+                        <div th:if="${workitem.comments != null and #lists.size(workitem.comments) > 0}">
+                            <ul class="list-group">
+                                <li class="list-group-item" th:each="c : ${workitem.comments}" th:text="${c}">Sample comment</li>
+                            </ul>
+                        </div>
+                        <div th:if="${workitem.comments == null || #lists.isEmpty(workitem.comments)}" class="text-muted">
+                            No comments yet. Be the first to comment.
                         </div>
                     </div>
                 </div>
