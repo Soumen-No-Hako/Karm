@@ -93,7 +93,7 @@ public WorkItem(){
 
     public void addComment(String comment) {
         if (this.comments == null) this.comments = new ArrayList<>();
-        this.comments.add(comment);
+        this.comments.add(java.time.Instant.now().toString().substring(0,10)+" -> "+comment);
         this.lastModifiedOn = java.time.Instant.now().toString();
     }
 }
