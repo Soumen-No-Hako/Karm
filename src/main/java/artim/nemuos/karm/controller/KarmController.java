@@ -56,7 +56,7 @@ public class KarmController {
         if(json.length()!=0) workItems = objectMapper.fromJson(json, new TypeToken<ArrayList<WorkItem>>() {}.getType());
     }
 
-    public void saveProjects() throws IOException {
+    public static void saveProjects() throws IOException {
         Gson objectMapper = new Gson();
         File projectFile = new File("projects.json");
         String jsonString = objectMapper.toJson(projects);
