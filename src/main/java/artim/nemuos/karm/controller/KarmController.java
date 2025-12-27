@@ -2,8 +2,10 @@ package artim.nemuos.karm.controller;
 
 import artim.nemuos.karm.model.Project;
 import artim.nemuos.karm.model.WorkItem;
+import artim.nemuos.karm.utility.KarmSorter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -22,6 +25,8 @@ public class KarmController {
 
     static ArrayList<Project> projects;
     static ArrayList<WorkItem> workItems;
+    @Autowired
+    public KarmSorter karmSorter;
 
     static {
         Gson objectMapper = new Gson();
@@ -69,8 +74,29 @@ public class KarmController {
         Files.writeString(Path.of("workitems.json"), jsonStringWI);
     }
     @GetMapping("/")
-    public String homepage(Model model) throws IOException {
-        model.addAttribute("projects", projects);
+    public String homepage(Model model, @RequestParam(required = false) String sortParam) throws IOException {
+        ArrayList<Project> projectsCopy = (ArrayList<Project>) projects.clone();
+        if (sortParam == null) model.addAttribute("projects", projects);
+         else
+        {
+            switch (sortParam) {
+                case "workitemcount":
+                    projectsCopy.sort((p1, p2) -> karmSorter.compareProjectWorkItemCount(p1.getWorkitemContainerSize(), p2.getWorkitemContainerSize()));
+                    break;
+                case "lastmodified":
+                    projectsCopy.sort((p1, p2) -> karmSorter.compareProjectUpdatedDates(p1.getLastModifiedOn(), p2.getLastModifiedOn()));
+                    break;
+                case "status":
+                    projectsCopy.sort((p1, p2) -> karmSorter.compareStatus(p1.getProjectStatus(), p2.getProjectStatus()));
+                    break;
+                default:
+                    // No sorting
+                    break;
+
+            }
+            model.addAttribute("projects", projectsCopy);
+        }
+
         boolean EmptyProject = false;
         if(projects == null){
             EmptyProject = true;
@@ -185,7 +211,7 @@ public class KarmController {
         return new RedirectView("/");
     }
     @GetMapping("/workitems/{projectId}")
-    public String getWorkItemsFragment(@PathVariable String projectId, Model model) {
+    public String getWorkItemsFragment(@PathVariable String projectId, Model model, @RequestParam(required = false) String sortParam) {
         // 1. Find the project
         Project project = projects.stream()
                 .filter(p -> p.getProjectId().equals(projectId))
@@ -194,8 +220,27 @@ public class KarmController {
 
         // 2. Add data to model
         if (project != null) {
-            model.addAttribute("workItems", workItems.stream().filter(wi -> wi.getWorkItemId().startsWith(projectId)).toList());
+            ArrayList<WorkItem> workItemsCopy = (ArrayList<WorkItem>) workItems.stream().filter(wi -> wi.getWorkItemId().startsWith(projectId)).collect(Collectors.toList());
+            if (sortParam != null) {
+                switch (sortParam) {
+                    case "status":
+                        workItemsCopy.sort((w1, w2) -> karmSorter.compareWorkItemsByStatus(w1, w2));
+                        break;
+                    case "lastmodified":
+                        workItemsCopy.sort((w1, w2) -> karmSorter.compareWorkItemDates(w1, w2));
+                        break;
+                    case "notes":
+                        workItemsCopy.sort((w1, w2) -> karmSorter.compareWorkItemsByNotes(w1, w2));
+                        break;
+                    default:
+                        // No sorting
+                        break;
+                }
+                model.addAttribute("workItems", workItemsCopy);
+            } else
+                model.addAttribute("workItems", workItems.stream().filter(wi -> wi.getWorkItemId().startsWith(projectId)).toList());
             model.addAttribute("projectId", projectId); // Needed for the hidden input in form
+            model.addAttribute("sortParam", sortParam);
         } else {
             model.addAttribute("workItems", new ArrayList<>());
         }

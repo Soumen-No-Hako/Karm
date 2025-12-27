@@ -7,10 +7,22 @@
     <div class="container-fluid p-4">
         <div class="d-flex justify-content-between align-items-center mb-5">
             <h3 class="fw-bold text-secondary">My Projects</h3>
+            <form action="/" method="get" class="d-flex align-items-center gap-2">
+                <label for="sortParam" class="form-label mb-0 fw-bold text-secondary">Sort By:</label>
+                <select name="sortParam" id="sortParam" class="form-select w-auto"
+                        onchange="this.form.submit()">
+                    <option value="" th:selected="${sortParam == null}">-- Select --</option>
+                    <option value="status" th:selected="${sortParam == 'status'}">Status</option>
+                    <option value="workitemcount" th:selected="${sortParam == 'workitemcount'}">Work Item Count</option>
+                    <option value="lastmodified" th:selected="${sortParam == 'lastmodified'}">Recently Updated</option>
+                </select>
+            </form>
             <a href="/project/new" class="btn btn-dark btn-lg shadow-sm">
                 <i class="fas fa-plus-circle me-2"></i>Create New Project
             </a>
         </div>
+<!--        Add a drop-down button that let user choose how data need to be sorted. status, workitem length etc. page with redirect back to localhost:8080/?sortParam=status-->
+
 
         <div th:if="${EmptyProject}" class="text-center py-5 bg-white rounded-4 shadow-sm">
             <h4 class="text-muted">No projects found. Create one to get started!</h4>
