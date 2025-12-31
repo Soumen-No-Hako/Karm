@@ -1,5 +1,6 @@
 package artim.nemuos.karm.controller;
 
+import artim.nemuos.karm.KarmApp;
 import artim.nemuos.karm.model.Project;
 import artim.nemuos.karm.model.WorkItem;
 import artim.nemuos.karm.utility.KarmSorter;
@@ -29,49 +30,21 @@ public class KarmController {
     public KarmSorter karmSorter;
 
     static {
-        Gson objectMapper = new Gson();
-        if(!new File("projects.json").exists()){
-            try {
-                new File("projects.json").createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        String json = null;
-        try {
-            json = Files.readString(Path.of("projects.json"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if(json.length()!=0) projects = objectMapper.fromJson(json, new TypeToken<ArrayList<Project>>() {}.getType());
-
-        if(!new File("workitems.json").exists()){
-            try {
-                new File("workitems.json").createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        json = null;
-        try {
-            json = Files.readString(Path.of("workitems.json"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if(json.length()!=0) workItems = objectMapper.fromJson(json, new TypeToken<ArrayList<WorkItem>>() {}.getType());
+        projects = (ArrayList<Project>) KarmApp.projects;
+        workItems = (ArrayList<WorkItem>) KarmApp.workItems;
     }
 
     public static void saveProjects() throws IOException {
         Gson objectMapper = new Gson();
-        File projectFile = new File("projects.json");
+        File projectFile = new File(KarmApp.karmDataLoc+"projects.json");
         String jsonString = objectMapper.toJson(projects);
         // Write jsonString to projectFile
-        Files.writeString(Path.of("projects.json"), jsonString);
+        Files.writeString(Path.of(KarmApp.karmDataLoc+"projects.json"), jsonString);
 
         File workItemFile = new File("workitems.json");
         String jsonStringWI = objectMapper.toJson(workItems);
         // Write json to workItemsFile
-        Files.writeString(Path.of("workitems.json"), jsonStringWI);
+        Files.writeString(Path.of(KarmApp.karmDataLoc+"workitems.json"), jsonStringWI);
     }
     @GetMapping("/")
     public String homepage(Model model, @RequestParam(required = false) String sortParam) throws IOException {

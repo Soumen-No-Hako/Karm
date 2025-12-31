@@ -8,7 +8,7 @@ import artim.nemuos.karm.KarmApp;
 import java.util.List;
 
 public class CommandParser {
-    public void processCommand(String[] args, List<Project> projects, List<WorkItem> workItems) {
+    public void processCommand(String[] args, List<Project> projects, List<WorkItem> workItems, String karmDataLoc) {
         for (int i = 0; i < args.length; i++) {
             if(args[i].equals("--help") || args[i].equals("-h")){
                 System.out.println("\n\nKarm Application Command Line Options:\n");
