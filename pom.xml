@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>artim.nemuos</groupId>
 	<artifactId>Karm</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<name>Karm</name>
 	<description>Project tracker system</description>
 	<url/>
