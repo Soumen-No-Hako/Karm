@@ -36,7 +36,37 @@ Karm is a native Android application that helps you organize projects, track wor
 - `com.google.code.gson` - JSON parsing (same as Spring Boot version)
 - `androidx.lifecycle:lifecycle-viewmodel-compose` - ViewModel support
 
-## Requirements
+## 📥 Quick Install (Pre-built APK)
+
+**Don't want to build from source?** Download the pre-built APK directly from GitHub!
+
+### Download Latest APK
+
+1. Go to the [Actions tab](https://github.com/Soumen-No-Hako/Karm/actions/workflows/android-build.yml)
+2. Click on the latest successful workflow run
+3. Scroll down to "Artifacts" section
+4. Download `karm-debug-apk` ZIP file
+5. Extract the ZIP and transfer `app-debug.apk` to your Android device
+6. Install the APK (enable "Install from unknown sources" if needed)
+
+### Download from Releases
+
+For official releases with version numbers:
+1. Go to [Releases page](https://github.com/Soumen-No-Hako/Karm/releases)
+2. Download `karm-x.x.x-debug.apk` from the latest release
+3. Transfer to your Android device and install
+
+### Quick Install via ADB
+```bash
+# Download the APK first, then:
+adb install karm-debug.apk
+```
+
+## 🛠 Build from Source
+
+If you want to build the app yourself:
+
+### Requirements
 
 - **Android Studio**: Hedgehog (2023.1.1) or later
 - **Minimum SDK**: API 24 (Android 7.0 Nougat)
@@ -252,6 +282,67 @@ DashboardScreen (/)
 ✅ **Material Design** - Modern Android UI patterns
 ✅ **Type Safety** - Kotlin's null-safety features
 ✅ **Better Data Management** - Proper singleton pattern instead of static variables
+
+## 🔄 Continuous Integration / Continuous Deployment
+
+This project uses GitHub Actions for automated builds.
+
+### Automated Builds
+
+**Workflow**: `.github/workflows/android-build.yml`
+
+Triggers on:
+- Push to `main`, `develop`, or `claude/**` branches
+- Pull requests to `main`
+- Manual workflow dispatch
+
+**What it does**:
+1. Sets up JDK 17 and Android SDK
+2. Builds debug APK
+3. Uploads APK as artifact (available for 30 days)
+4. Comments on PRs with download link
+
+**View builds**: [Actions Tab](https://github.com/Soumen-No-Hako/Karm/actions/workflows/android-build.yml)
+
+### Release Builds
+
+**Workflow**: `.github/workflows/android-release.yml`
+
+Triggers on:
+- Git tags matching `v*.*.*` or `android-v*.*.*`
+- Manual workflow dispatch with version input
+
+**What it does**:
+1. Builds debug and release APKs
+2. Generates SHA-256 checksums
+3. Creates GitHub Release with APKs and release notes
+4. Attaches APK files to the release
+
+**Create a release**:
+```bash
+# Tag and push to trigger release
+git tag android-v1.0.0
+git push origin android-v1.0.0
+```
+
+Or use manual workflow dispatch from the Actions tab.
+
+### Building Locally
+
+**Command line build**:
+```bash
+cd karm-android
+
+# Debug APK
+./gradlew assembleDebug
+# Output: app/build/outputs/apk/debug/app-debug.apk
+
+# Release APK (unsigned)
+./gradlew assembleRelease
+# Output: app/build/outputs/apk/release/app-release.apk
+```
+
+**Note**: Release builds require signing configuration for distribution.
 
 ## Future Enhancements
 

@@ -5,6 +5,24 @@ A Java application to create work items and project structures, and to keep trac
 - Homepage: https://github.com/Soumen-No-Hako/Karm
 - License: Apache License 2.0
 
+## 📱 Two Versions Available
+
+Karm is now available in **two versions**:
+
+1. **Web Version** (Spring Boot) - Original version, runs on localhost
+   - 📂 Location: Root directory (`src/`, `pom.xml`)
+   - 🚀 Run: `mvn spring-boot:run` or `java -jar target/karm.jar`
+   - 🌐 Access: Browser at `http://127.0.0.2:8080`
+
+2. **Android Native App** (Kotlin + Jetpack Compose) - NEW! ⭐
+   - 📂 Location: [`karm-android/`](karm-android/) directory
+   - 📥 Download APK: [Latest Release](https://github.com/Soumen-No-Hako/Karm/releases) or [Actions Artifacts](https://github.com/Soumen-No-Hako/Karm/actions/workflows/android-build.yml)
+   - 📱 Install: Transfer APK to Android device (Android 7.0+)
+   - 📖 Docs: [Android README](karm-android/README.md) | [Conversion Guide](ANDROID_CONVERSION.md)
+
+**Quick Download Android APK**:
+- Go to [Actions](https://github.com/Soumen-No-Hako/Karm/actions/workflows/android-build.yml) → Click latest build → Download `karm-debug-apk` artifact
+
 ## Table of Contents
 
 - [About](#about)
