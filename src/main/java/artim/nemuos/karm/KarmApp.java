@@ -11,8 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,53 +31,48 @@ public class KarmApp {
 		bootKarmApp();
 		CommandParser cmdPrsr = new CommandParser();
 //		AtomicInteger i= new AtomicInteger(1);
-		loadProjects();
+		loadData();
 		if(args.length>0) cmdPrsr.processCommand(args, projects, workItems, karmDataLoc);
 		else SpringApplication.run(KarmApp.class, args);
 	}
 
 	private static void bootKarmApp() {
-		var sysEnv = System.getenv();
-		System.out.println("Booting Karm Application...");
-		karmDataLoc = sysEnv.get("LOCALAPPDATA")+"\\Karm\\data\\";
-		System.out.println("Karm Data Location Will be initialised at : "+karmDataLoc);
-		if(!new File(karmDataLoc).exists()){
-			new File(karmDataLoc).mkdirs();
-			System.out.println("Karm Data Directory created at : "+karmDataLoc);
+		String os = System.getProperty("os.name").toLowerCase();
+		Path basePath;
+
+		if (os.contains("win")) {
+			String localAppData = System.getenv("LOCALAPPDATA");
+			basePath = Paths.get(localAppData, "Karm", "data");
+		} else {
+			// Unix/Linux approach: /home/user/.karm/data
+			basePath = Paths.get(System.getProperty("user.home"), ".karm", "data");
+		}
+
+		karmDataLoc = basePath.toString() + FileSystems.getDefault().getSeparator();
+
+		try {
+			Files.createDirectories(basePath);
+			System.out.println("Karm Data Location: " + karmDataLoc);
+		} catch (IOException e) {
+			System.err.println("Failed to create directory: " + e.getMessage());
 		}
 	}
 
-	public static void loadProjects() throws IOException {
-		Gson objectMapper = new Gson();
-		if(!new File(karmDataLoc+"projects.json").exists()){
-			try {
-				new File(karmDataLoc+"projects.json").createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		String json = null;
-		try {
-			json = Files.readString(Path.of(karmDataLoc+"projects.json"));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		if(json.length()!=0) projects = objectMapper.fromJson(json, new TypeToken<ArrayList<Project>>() {}.getType());
+	public static void loadData() throws IOException {
+		Gson gson = new Gson();
+		// Generalized loading logic
+		projects = loadFile(gson, "projects.json", new TypeToken<ArrayList<Project>>(){});
+		workItems = loadFile(gson, "workitems.json", new TypeToken<ArrayList<WorkItem>>(){});
+	}
 
-		if(!new File(karmDataLoc+"workitems.json").exists()){
-			try {
-				new File(karmDataLoc+"workitems.json").createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+	private static <T> T loadFile(Gson gson, String fileName, TypeToken<T> typeToken) throws IOException {
+		Path filePath = Paths.get(karmDataLoc, fileName);
+		if (Files.notExists(filePath)) {
+			Files.createFile(filePath);
+			return null;
 		}
-		json = null;
-		try {
-			json = Files.readString(Path.of(karmDataLoc+"workitems.json"));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		if(json.length()!=0) workItems = objectMapper.fromJson(json, new TypeToken<ArrayList<WorkItem>>() {}.getType());
+		String content = Files.readString(filePath);
+		return content.isEmpty() ? null : gson.fromJson(content, typeToken.getType());
 	}
 	public void saveProjects() {
 		Gson objectMapper = new Gson();
