@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Karm</string>
+
+    <!-- Navigation -->
+    <string name="nav_projects">Projects</string>
+    <string name="nav_back">Back</string>
+
+    <!-- Project Screen -->
+    <string name="projects_title">Projects</string>
+    <string name="add_project">Add Project</string>
+    <string name="no_projects">No projects yet. Create your first project!</string>
+    <string name="work_items_count">%d work items</string>
+    <string name="sort_by">Sort by</string>
+
+    <!-- Project Form -->
+    <string name="project_name">Project Name</string>
+    <string name="project_description">Project Description</string>
+    <string name="project_name_hint">Enter project name</string>
+    <string name="project_description_hint">Enter project description</string>
+    <string name="create_project">Create Project</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Project Detail -->
+    <string name="project_details">Project Details</string>
+    <string name="work_items">Work Items</string>
+    <string name="add_work_item">Add Work Item</string>
+    <string name="no_work_items">No work items yet. Create your first work item!</string>
+    <string name="edit_project">Edit Project</string>
+    <string name="delete_project">Delete Project</string>
+
+    <!-- Work Item Form -->
+    <string name="work_item_title">Work Item Title</string>
+    <string name="work_item_description">Work Item Description</string>
+    <string name="work_item_title_hint">Enter work item title</string>
+    <string name="work_item_description_hint">Enter work item description</string>
+    <string name="create_work_item">Create Work Item</string>
+
+    <!-- Work Item Detail -->
+    <string name="work_item_details">Work Item Details</string>
+    <string name="comments">Comments</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="no_comments">No comments yet. Add your first comment!</string>
+    <string name="edit_work_item">Edit Work Item</string>
+    <string name="delete_work_item">Delete Work Item</string>
+
+    <!-- Comment Form -->
+    <string name="comment_text">Comment</string>
+    <string name="comment_hint">Enter your comment</string>
+    <string name="add">Add</string>
+
+    <!-- Status -->
+    <string name="status_todo">TO-DO</string>
+    <string name="status_in_progress">IN-PROGRESS</string>
+    <string name="status_done">DONE</string>
+    <string name="status_canceled">CANCELED</string>
+    <string name="change_status">Change Status</string>
+
+    <!-- Sorting -->
+    <string name="sort_last_modified">Last Modified</string>
+    <string name="sort_status">Status</string>
+    <string name="sort_work_item_count">Work Item Count</string>
+
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="confirm">Confirm</string>
+    <string name="created">Created: %s</string>
+    <string name="updated">Updated: %s</string>
+</resources>

@@ -1,0 +1,77 @@
+name: Android Build
+
+on:
+  push:
+    branches: [ main, develop, 'claude/**' ]
+    paths:
+      - 'karm-android/**'
+      - '.github/workflows/android-build.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'karm-android/**'
+      - '.github/workflows/android-build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      working-directory: karm-android
+      run: chmod +x gradlew
+
+    - name: Build Debug APK
+      working-directory: karm-android
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: karm-debug-apk
+        path: karm-android/app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
+
+    - name: Get APK info
+      working-directory: karm-android
+      run: |
+        echo "APK Size: $(du -h app/build/outputs/apk/debug/app-debug.apk | cut -f1)"
+        echo "APK Path: app/build/outputs/apk/debug/app-debug.apk"
+
+    - name: Comment PR with download link
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const comment = `## 📱 Android APK Build Successful!
+
+          The APK has been built successfully. You can download it from the artifacts section of this workflow run.
+
+          **Download**: Go to the [Actions tab](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) and download the \`karm-debug-apk\` artifact.
+
+          **Install Instructions**:
+          1. Download and extract the artifact ZIP
+          2. Transfer \`app-debug.apk\` to your Android device
+          3. Enable "Install from unknown sources" in Settings
+          4. Tap the APK file to install
+
+          ⚠️ **Note**: This is a debug build. For production, use a signed release build.`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
